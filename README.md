@@ -1,4 +1,4 @@
-# Wwiem Koussani — Portfolio
+# Wiem Koussani — Portfolio
 
 Professional portfolio for an AI software engineer. Built with React + Vite. Free hosting on Vercel.
 

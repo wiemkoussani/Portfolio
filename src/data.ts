@@ -11,7 +11,7 @@ export type Project = {
 };
 
 export const profile = {
-  name: "Wwiem Koussani",
+  name: "Wiem Koussani",
   role: "Software Engineer · AI Specialist",
   experience: "3+ years",
   photo: "/images/wiem-koussani.png",

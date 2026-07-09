@@ -74,7 +74,7 @@ export function Hero() {
         <img
           className="hero-photo"
           src={profile.photo}
-          alt="Portrait of Wwiem Koussani"
+          alt="Portrait of Wiem Koussani"
         />
       </motion.div>
     </section>

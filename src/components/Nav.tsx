@@ -24,7 +24,7 @@ export function Nav() {
     <header className={`nav${scrolled || open ? " scrolled" : ""}${open ? " open" : ""}`}>
       <div className="nav-inner">
         <a className="nav-brand" href="#top" onClick={close}>
-          Wwiem Koussani
+          Wiem Koussani
         </a>
         <ul className="nav-links">
           {links.map((link) => (
