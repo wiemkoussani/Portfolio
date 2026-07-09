@@ -1,0 +1,20 @@
+# Dependencies
+node_modules
+dist
+.DS_Store
+*.local
+.env
+.env.*
+
+# Original large source videos (kept out of deploy; compressed copies live in public/)
+/media.mp4
+/RoadBud.mp4
+/orch.webm
+/stock_management (1).mp4
+/Wiem.Koussani (1) (1).png
+
+# Tooling caches
+.vite
+
+tsconfig.tsbuildinfo
+
