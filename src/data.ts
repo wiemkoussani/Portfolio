@@ -97,7 +97,7 @@ export const projects: Project[] = [
       "Dashboards, CSV/PDF reporting & offline sync",
     ],
     stack: ["Flutter", "Supabase"],
-    comingSoon: true,
+    video: "/videos/wini.mp4",
   },
 ];
 
