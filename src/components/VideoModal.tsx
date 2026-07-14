@@ -79,16 +79,18 @@ export function VideoModal({ project, onClose }: Props) {
 
         <div className={`modal-media${portrait ? " portrait" : ""}`}>
           {hasVideo ? (
-            <video
-              ref={videoRef}
-              key={project.video}
-              src={project.video}
-              controls
-              autoPlay
-              playsInline
-              preload="auto"
-              controlsList="nodownload"
-            />
+            <div className={`video-shell${portrait ? " portrait" : ""}`}>
+              <video
+                ref={videoRef}
+                key={project.video}
+                src={project.video}
+                controls
+                autoPlay
+                playsInline
+                preload="auto"
+                controlsList="nodownload"
+              />
+            </div>
           ) : (
             <div className="coming-soon">
               <strong>Coming soon</strong>
