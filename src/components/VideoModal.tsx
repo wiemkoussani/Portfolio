@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import type { Project } from "../data";
 
@@ -8,6 +8,10 @@ type Props = {
 };
 
 export function VideoModal({ project, onClose }: Props) {
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const [playing, setPlaying] = useState(false);
+  const [portrait, setPortrait] = useState(false);
+
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") onClose();
@@ -19,6 +23,41 @@ export function VideoModal({ project, onClose }: Props) {
       window.removeEventListener("keydown", onKey);
     };
   }, [onClose]);
+
+  useEffect(() => {
+    const el = videoRef.current;
+    if (!el || !project.video) return;
+
+    const tryPlay = async () => {
+      try {
+        el.muted = true;
+        await el.play();
+        setPlaying(true);
+      } catch {
+        setPlaying(false);
+      }
+    };
+
+    tryPlay();
+  }, [project.video]);
+
+  const handlePlayClick = async () => {
+    const el = videoRef.current;
+    if (!el) return;
+    try {
+      el.muted = false;
+      await el.play();
+      setPlaying(true);
+    } catch {
+      setPlaying(false);
+    }
+  };
+
+  const onLoadedMetadata = () => {
+    const el = videoRef.current;
+    if (!el) return;
+    setPortrait(el.videoHeight > el.videoWidth);
+  };
 
   return (
     <motion.div
@@ -43,34 +82,40 @@ export function VideoModal({ project, onClose }: Props) {
           ×
         </button>
 
-        <div className="modal-media">
+        <div className={`modal-media${portrait ? " portrait" : ""}`}>
           {project.comingSoon || !project.video ? (
             <div className="coming-soon">
               <strong>Coming soon</strong>
               <p>Demo video will be available shortly.</p>
-              <a
-                href="#coming-soon"
-                onClick={(e) => e.preventDefault()}
-                style={{
-                  display: "inline-block",
-                  marginTop: "1rem",
-                  opacity: 0.7,
-                  fontSize: "0.9rem",
-                  textDecoration: "underline",
-                }}
-              >
-                Watch demo (link placeholder)
-              </a>
             </div>
           ) : (
-            <video
-              key={project.video}
-              src={project.video}
-              controls
-              autoPlay
-              playsInline
-              preload="metadata"
-            />
+            <>
+              <video
+                ref={videoRef}
+                key={project.video}
+                src={project.video}
+                controls
+                playsInline
+                preload="auto"
+                onLoadedMetadata={onLoadedMetadata}
+                onPlay={() => setPlaying(true)}
+                onPause={() => setPlaying(false)}
+                onEnded={() => setPlaying(false)}
+              />
+              {!playing && (
+                <button
+                  type="button"
+                  className="video-play-btn"
+                  onClick={handlePlayClick}
+                  aria-label="Play demo video"
+                >
+                  <span className="video-play-icon" aria-hidden>
+                    ▶
+                  </span>
+                  <span>Play demo</span>
+                </button>
+              )}
+            </>
           )}
         </div>
 
