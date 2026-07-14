@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import type { Project } from "../data";
 
@@ -9,9 +9,8 @@ type Props = {
 
 export function VideoModal({ project, onClose }: Props) {
   const videoRef = useRef<HTMLVideoElement>(null);
-  const [playing, setPlaying] = useState(false);
-  const [portrait, setPortrait] = useState(Boolean(project.portrait));
-  const [ready, setReady] = useState(false);
+  const portrait = Boolean(project.portrait);
+  const hasVideo = Boolean(project.video) && !project.comingSoon;
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -26,40 +25,34 @@ export function VideoModal({ project, onClose }: Props) {
   }, [onClose]);
 
   useEffect(() => {
-    setPlaying(false);
-    setReady(false);
-    setPortrait(Boolean(project.portrait));
-  }, [project.id, project.portrait]);
-
-  const startPlayback = async () => {
     const el = videoRef.current;
-    if (!el) return;
-    try {
-      el.currentTime = 0;
-      el.muted = false;
-      await el.play();
-      setPlaying(true);
-    } catch {
+    if (!el || !hasVideo) return;
+
+    let cancelled = false;
+
+    const playNow = async () => {
       try {
-        el.muted = true;
+        el.muted = false;
         await el.play();
-        setPlaying(true);
       } catch {
-        setPlaying(false);
+        if (cancelled) return;
+        try {
+          el.muted = true;
+          await el.play();
+        } catch {
+          /* user can use native controls */
+        }
       }
-    }
-  };
+    };
 
-  const onLoadedMetadata = () => {
-    const el = videoRef.current;
-    if (!el) return;
-    if (!project.portrait) {
-      setPortrait(el.videoHeight > el.videoWidth);
-    }
-    setReady(true);
-  };
+    // Project click already counts as a user gesture — start immediately.
+    void playNow();
 
-  const hasVideo = Boolean(project.video) && !project.comingSoon;
+    return () => {
+      cancelled = true;
+      el.pause();
+    };
+  }, [project.video, hasVideo]);
 
   return (
     <motion.div
@@ -86,36 +79,16 @@ export function VideoModal({ project, onClose }: Props) {
 
         <div className={`modal-media${portrait ? " portrait" : ""}`}>
           {hasVideo ? (
-            <>
-              <div className="video-badge">Demo video</div>
-              <video
-                ref={videoRef}
-                key={project.video}
-                src={project.video}
-                controls={playing}
-                playsInline
-                preload="auto"
-                controlsList="nodownload"
-                onLoadedMetadata={onLoadedMetadata}
-                onPlay={() => setPlaying(true)}
-                onPause={() => setPlaying(false)}
-                onEnded={() => setPlaying(false)}
-              />
-              {(!playing || !ready) && (
-                <button
-                  type="button"
-                  className="video-play-btn"
-                  onClick={startPlayback}
-                  aria-label="Play demo video"
-                >
-                  <span className="video-play-icon" aria-hidden>
-                    ▶
-                  </span>
-                  <span className="video-play-label">Play demo</span>
-                  <span className="video-play-hint">Tap to watch the full walkthrough</span>
-                </button>
-              )}
-            </>
+            <video
+              ref={videoRef}
+              key={project.video}
+              src={project.video}
+              controls
+              autoPlay
+              playsInline
+              preload="auto"
+              controlsList="nodownload"
+            />
           ) : (
             <div className="coming-soon">
               <strong>Coming soon</strong>
