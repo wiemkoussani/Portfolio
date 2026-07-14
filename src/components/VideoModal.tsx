@@ -10,7 +10,8 @@ type Props = {
 export function VideoModal({ project, onClose }: Props) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [playing, setPlaying] = useState(false);
-  const [portrait, setPortrait] = useState(false);
+  const [portrait, setPortrait] = useState(Boolean(project.portrait));
+  const [ready, setReady] = useState(false);
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -25,10 +26,20 @@ export function VideoModal({ project, onClose }: Props) {
   }, [onClose]);
 
   useEffect(() => {
-    const el = videoRef.current;
-    if (!el || !project.video) return;
+    setPlaying(false);
+    setReady(false);
+    setPortrait(Boolean(project.portrait));
+  }, [project.id, project.portrait]);
 
-    const tryPlay = async () => {
+  const startPlayback = async () => {
+    const el = videoRef.current;
+    if (!el) return;
+    try {
+      el.currentTime = 0;
+      el.muted = false;
+      await el.play();
+      setPlaying(true);
+    } catch {
       try {
         el.muted = true;
         await el.play();
@@ -36,28 +47,19 @@ export function VideoModal({ project, onClose }: Props) {
       } catch {
         setPlaying(false);
       }
-    };
-
-    tryPlay();
-  }, [project.video]);
-
-  const handlePlayClick = async () => {
-    const el = videoRef.current;
-    if (!el) return;
-    try {
-      el.muted = false;
-      await el.play();
-      setPlaying(true);
-    } catch {
-      setPlaying(false);
     }
   };
 
   const onLoadedMetadata = () => {
     const el = videoRef.current;
     if (!el) return;
-    setPortrait(el.videoHeight > el.videoWidth);
+    if (!project.portrait) {
+      setPortrait(el.videoHeight > el.videoWidth);
+    }
+    setReady(true);
   };
+
+  const hasVideo = Boolean(project.video) && !project.comingSoon;
 
   return (
     <motion.div
@@ -68,7 +70,7 @@ export function VideoModal({ project, onClose }: Props) {
       onClick={onClose}
     >
       <motion.div
-        className="modal"
+        className={`modal${portrait ? " modal-portrait" : ""}`}
         role="dialog"
         aria-modal="true"
         aria-labelledby="modal-title"
@@ -83,39 +85,42 @@ export function VideoModal({ project, onClose }: Props) {
         </button>
 
         <div className={`modal-media${portrait ? " portrait" : ""}`}>
-          {project.comingSoon || !project.video ? (
-            <div className="coming-soon">
-              <strong>Coming soon</strong>
-              <p>Demo video will be available shortly.</p>
-            </div>
-          ) : (
+          {hasVideo ? (
             <>
+              <div className="video-badge">Demo video</div>
               <video
                 ref={videoRef}
                 key={project.video}
                 src={project.video}
-                controls
+                controls={playing}
                 playsInline
                 preload="auto"
+                controlsList="nodownload"
                 onLoadedMetadata={onLoadedMetadata}
                 onPlay={() => setPlaying(true)}
                 onPause={() => setPlaying(false)}
                 onEnded={() => setPlaying(false)}
               />
-              {!playing && (
+              {(!playing || !ready) && (
                 <button
                   type="button"
                   className="video-play-btn"
-                  onClick={handlePlayClick}
+                  onClick={startPlayback}
                   aria-label="Play demo video"
                 >
                   <span className="video-play-icon" aria-hidden>
                     ▶
                   </span>
-                  <span>Play demo</span>
+                  <span className="video-play-label">Play demo</span>
+                  <span className="video-play-hint">Tap to watch the full walkthrough</span>
                 </button>
               )}
             </>
+          ) : (
+            <div className="coming-soon">
+              <strong>Coming soon</strong>
+              <p>Demo video will be available shortly.</p>
+            </div>
           )}
         </div>
 
