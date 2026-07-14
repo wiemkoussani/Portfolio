@@ -9,6 +9,7 @@ export type Project = {
   comingSoon?: boolean;
   featured?: boolean;
   portrait?: boolean;
+  compactVideo?: boolean;
 };
 
 export const profile = {
@@ -84,7 +85,6 @@ export const projects: Project[] = [
     ],
     stack: ["Flutter", ".NET", "Machine Learning"],
     video: "/videos/roadbud.mp4",
-    portrait: true,
   },
   {
     id: "wini-maint",
@@ -100,7 +100,7 @@ export const projects: Project[] = [
     ],
     stack: ["Flutter", "Supabase"],
     video: "/videos/wini.mp4?v=4",
-    portrait: true,
+    compactVideo: true,
   },
 ];
 

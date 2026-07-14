@@ -9,7 +9,7 @@ type Props = {
 
 export function VideoModal({ project, onClose }: Props) {
   const videoRef = useRef<HTMLVideoElement>(null);
-  const portrait = Boolean(project.portrait);
+  const compact = Boolean(project.compactVideo);
   const hasVideo = Boolean(project.video) && !project.comingSoon;
 
   useEffect(() => {
@@ -45,7 +45,6 @@ export function VideoModal({ project, onClose }: Props) {
       }
     };
 
-    // Project click already counts as a user gesture — start immediately.
     void playNow();
 
     return () => {
@@ -63,7 +62,7 @@ export function VideoModal({ project, onClose }: Props) {
       onClick={onClose}
     >
       <motion.div
-        className={`modal${portrait ? " modal-portrait" : ""}`}
+        className={`modal${compact ? " modal-compact" : ""}`}
         role="dialog"
         aria-modal="true"
         aria-labelledby="modal-title"
@@ -77,9 +76,22 @@ export function VideoModal({ project, onClose }: Props) {
           ×
         </button>
 
-        <div className={`modal-media${portrait ? " portrait" : ""}`}>
+        <div className={`modal-media${compact ? " compact" : ""}`}>
           {hasVideo ? (
-            <div className={`video-shell${portrait ? " portrait" : ""}`}>
+            compact ? (
+              <div className="video-shell compact">
+                <video
+                  ref={videoRef}
+                  key={project.video}
+                  src={project.video}
+                  controls
+                  autoPlay
+                  playsInline
+                  preload="auto"
+                  controlsList="nodownload"
+                />
+              </div>
+            ) : (
               <video
                 ref={videoRef}
                 key={project.video}
@@ -90,7 +102,7 @@ export function VideoModal({ project, onClose }: Props) {
                 preload="auto"
                 controlsList="nodownload"
               />
-            </div>
+            )
           ) : (
             <div className="coming-soon">
               <strong>Coming soon</strong>

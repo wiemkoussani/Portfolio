@@ -657,7 +657,7 @@ button {
   position: relative;
 }
 
-.modal.modal-portrait {
+.modal.modal-compact {
   width: min(480px, 100%);
 }
 
@@ -687,10 +687,9 @@ button {
   position: relative;
 }
 
-.modal-media.portrait {
+.modal-media.compact {
   aspect-ratio: auto;
   width: 100%;
-  max-height: none;
   margin: 0;
   border-radius: 22px 22px 0 0;
   background: #111820;
@@ -700,14 +699,7 @@ button {
   justify-content: center;
 }
 
-.video-shell {
-  width: 100%;
-  height: 100%;
-  display: grid;
-  place-items: center;
-}
-
-.video-shell.portrait {
+.video-shell.compact {
   width: min(220px, 58vw);
   max-height: min(42vh, 380px);
   border-radius: 14px;
@@ -717,18 +709,21 @@ button {
   background: #000;
 }
 
-.modal-media video,
-.video-shell video {
+.modal-media video {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  background: #0b141a;
+  display: block;
+}
+
+.video-shell.compact video {
   width: 100%;
   height: 100%;
   max-height: min(42vh, 380px);
   object-fit: contain;
   background: #000;
   display: block;
-}
-
-.video-shell:not(.portrait) video {
-  max-height: none;
 }
 
 .coming-soon {
@@ -745,21 +740,34 @@ button {
 }
 
 .modal-body {
+  padding: 1.6rem 1.7rem 1.9rem;
+  background: var(--white);
+}
+
+.modal-compact .modal-body {
   padding: 1.35rem 1.4rem 1.7rem;
   border-top: 1px solid var(--line);
-  background: var(--white);
 }
 
 .modal-body h3 {
   font-family: var(--font-display);
+  font-size: 2rem;
+  margin: 0 0 0.5rem;
+  font-weight: 600;
+}
+
+.modal-compact .modal-body h3 {
   font-size: 1.75rem;
   margin: 0 0 0.45rem;
-  font-weight: 600;
 }
 
 .modal-body .tagline {
   color: var(--sky-deep);
   font-weight: 500;
+  margin: 0 0 1rem;
+}
+
+.modal-compact .modal-body .tagline {
   margin: 0 0 0.85rem;
 }
 
@@ -807,23 +815,22 @@ button {
   }
 
   .modal,
-  .modal.modal-portrait {
+  .modal.modal-compact {
     width: 100%;
     max-height: min(94vh, 920px);
     border-radius: 20px;
   }
 
-  .modal-media.portrait {
+  .modal-media.compact {
     padding: 1.1rem 0.9rem 0.9rem;
   }
 
-  .video-shell.portrait {
+  .video-shell.compact {
     width: min(200px, 52vw);
     max-height: min(38vh, 340px);
   }
 
-  .modal-media video,
-  .video-shell video {
+  .video-shell.compact video {
     max-height: min(38vh, 340px);
   }
 }
